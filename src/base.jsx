@@ -1,40 +1,43 @@
 import React, { useEffect, useState } from 'react'
+import css from './base.module.css'
+
 
 function Base() {
     let [str, setStr] = useState('Пусто') //вывод
-    let [mat, setMat] = useState([]) //процесс
-    let [sum, setSum] = useState('') //результат
+    let [mat, setMat] = useState('') //процесс
     let [test, setTest] = useState([])
     let [test2, setTest2] = useState([])
-    let [bool, setBool] = useState(false)
+    let num = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+    let sign = ['+', '-', '*', '/', '=']
+    let NumberOutput = num.map((val, i) => <div><span className={css.btn} onClick={(e) => number(e.target.innerText)}>{val}</span></div>)
+    let SignOutput = sign.map((val, i) => <div><span className={css.btn} onClick={(e) => number(e.target.innerText)}>{val}</span></div>)
 
     let sss = ''
     let strr = ''
     let a = 0
-    console.log(sss)
 
     function number(num) {
-
 
         if (test2.length >= test.length && test2.length > 0) {
             let s = [...test2]
             let m = s.splice(test.length - 1, test2.length - test.length + 1)
         }
 
-
-        if (num !== '+' || num !== '-') {
-            if (num !== undefined && num !== '+' & num !== '-' & num !== '=') {
+        if (num !== '+' || num !== '-' || num !== 'x' || num !== '/') {
+            if (num !== undefined && num !== '+' & num !== '-' & num !== '=' & num !== 'x' & num !== '/') {
+                console.log('1111111')
                 sss += num
-                console.log('Сложение чисел')
             }
         }
 
-        if (num == '+' || num == '-') {
-            setTest([...test, sss])
-            setTest2([...test2, num])
-            console.log('Добавление числа и знака в массив')
+        if (num == '+' || num == '-' || num == 'x' || num == '/') {
+            if (sss === '') {
+                setTest2([...test2, num])
+            } else {
+                setTest([...test, sss])
+                setTest2([...test2, num])
+            }
         }
-
 
         if (num == '=') {
             if (test.length <= test2.length) {
@@ -46,8 +49,9 @@ function Base() {
         console.log(num, 'получаемое значение')
         console.log(sss, 'строка чисел')
     }
+
     useEffect(() => {
-        if (test.length > test2.length) {
+        if (test.length > test2.length && test2.length > 0) {
             test2.map((x, i) => {
                 if (x === '+') {
                     if (a == 0) {
@@ -67,6 +71,22 @@ function Base() {
                         a = Number(a) - Number(test[i + 1])
                     }
                 }
+                if (x === 'x') {
+                    if (a == 0) {
+                        a = Number(test[i]) * Number(test[i + 1])
+                    }
+                    else {
+                        a = Number(a) * Number(test[i + 1])
+                    }
+                }
+                if (x === '/') {
+                    if (a == 0) {
+                        a = Number(test[i]) / Number(test[i + 1])
+                    }
+                    else {
+                        a = Number(a) / Number(test[i + 1])
+                    }
+                }
             })
             for (let z = 0; z < test.length; z++) {
                 if (z < test.length && test2[z] !== undefined) {
@@ -74,23 +94,34 @@ function Base() {
                 }
                 else {
                     strr += String(test[z]) + '=' + String(a)
+                    sss = String(a)
+                    setTest([sss])
+                    setTest2([])
                 }
 
             }
-            console.log(a, 'Ответ') 
+            setStr(`Ответ: ${a}`)
+            setMat(`Решение: ${strr}`)
+            console.log(a, 'Ответ')
             console.log(strr, 'Решение')
-            // setTest(a)
-            // setTest2([])
+
         }
     }, [test])
 
     return (
-        <div>
-            <div style={{ margin: '10px' }}>{str}</div>
-            <div><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>1</span><span style={{ margin: '10px' }}>2</span><span style={{ margin: '10px' }}>3</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>+</span></div>
-            <div><span style={{ margin: '10px' }} onClick={(e) => number([...mat, e.target.innerText])}>4</span><span style={{ margin: '10px' }}>5</span><span style={{ margin: '10px' }}>6</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>-</span></div>
-            <div><span style={{ margin: '10px' }}>7</span><span style={{ margin: '10px' }}>8</span><span style={{ margin: '10px' }}>9</span><span style={{ margin: '10px' }}>x</span></div>
-            <div><span style={{ margin: '10px' }}>0</span><span style={{ margin: '10px' }}>/</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>=</span></div>
+        <div className={css.form}>
+            <div style={{ margin: '10px', color: 'white' }}>{str}</div>
+            <div style={{ margin: '10px', color: 'white' }}>{mat}</div>
+            <div className={css.gr}>
+                {NumberOutput}
+                {SignOutput}
+            </div>
+
+
+            {/* <div ><span className={css.btn} onClick={(e) => number(e.target.innerText)}>1</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>2</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>3</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>+</span></div>
+            <div><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>4</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>5</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>6</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>-</span></div>
+            <div><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>7</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>8</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>9</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>x</span></div>
+            <div><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>0</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>/</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>=</span></div> */}
         </div>
     )
 }
