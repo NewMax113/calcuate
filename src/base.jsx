@@ -7,41 +7,68 @@ function Base() {
     let [mat, setMat] = useState('') //процесс
     let [test, setTest] = useState([])
     let [test2, setTest2] = useState([])
+    let [text, setText] = useState('')
+
     let num = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
-    let sign = ['+', '-', '*', '/', '=']
+    let sign = ['+', '-', 'x', '/', '=']
     let NumberOutput = num.map((val, i) => <div><span className={css.btn} onClick={(e) => number(e.target.innerText)}>{val}</span></div>)
     let SignOutput = sign.map((val, i) => <div><span className={css.btn} onClick={(e) => number(e.target.innerText)}>{val}</span></div>)
 
-    let sss = ''
+    let [sss, setSss] = useState('')
     let strr = ''
     let a = 0
 
     function number(num) {
 
-        if (test2.length >= test.length && test2.length > 0) {
-            let s = [...test2]
-            let m = s.splice(test.length - 1, test2.length - test.length + 1)
-        }
 
+
+        // if (test2.length >= test.length && test2.length > 0 ) {
+        //     let s = [...test2]
+        //     let m = s.splice(test.length - 1, test2.length - test.length + 1)
+        //     console.log('sh')
+        // }
         if (num !== '+' || num !== '-' || num !== 'x' || num !== '/') {
             if (num !== undefined && num !== '+' & num !== '-' & num !== '=' & num !== 'x' & num !== '/') {
-                console.log('1111111')
-                sss += num
+                console.log('отработало при вводе')
+                setSss(() => sss + num)
+                setText(text + num)
             }
         }
 
         if (num == '+' || num == '-' || num == 'x' || num == '/') {
             if (sss === '') {
-                setTest2([...test2, num])
+                if (test2.length > 0) {
+                    test2[test2.length-1]=num
+                    setTest2(test2)
+                    let ss = text.split('')
+                     ss[text.length-1]=num
+                    let zz = ss.join('')
+                    setText(zz)
+                    // setText(text)
+                    //setText(text.split('')[text.length-1]=num)
+                    // setText(text)
+                }
             } else {
-                setTest([...test, sss])
-                setTest2([...test2, num])
+                if (sss.length > 0) {
+                    setTest([...test, sss])
+                    setTest2([...test2, num])
+                    setText(text + num)
+                    setSss('')
+                    console.log('ddd')//проверить 
+                }
+                else {
+                    setTest([...test, sss])
+                    setText(text + num)
+                    setSss('')
+                }
+
             }
         }
-
+console.log('723'.length)
         if (num == '=') {
             if (test.length <= test2.length) {
                 setTest([...test, sss])
+                console.log('отработало при равно')
             }
         }
         console.log(test, 'числа')
@@ -53,11 +80,11 @@ function Base() {
     useEffect(() => {
         if (test.length > test2.length && test2.length > 0) {
             test2.map((x, i) => {
+                
                 if (x === '+') {
                     if (a == 0) {
                         a = 0
                         a = Number(test[i]) + Number(test[i + 1])
-
                     }
                     else {
                         a = Number(a) + Number(test[i + 1])
@@ -94,9 +121,12 @@ function Base() {
                 }
                 else {
                     strr += String(test[z]) + '=' + String(a)
-                    sss = String(a)
-                    setTest([sss])
+                    console.log(a)
+                    setSss(() => String(a))
+                    setTest([])//ошибка
                     setTest2([])
+                    //setText(text + '=' + String(a))
+                    setText(String(a))
                 }
 
             }
@@ -104,26 +134,34 @@ function Base() {
             setMat(`Решение: ${strr}`)
             console.log(a, 'Ответ')
             console.log(strr, 'Решение')
+            console.log(sss, 'строка')
+            console.log(test, test2)
 
         }
+
     }, [test])
 
     return (
         <div className={css.form}>
             <div style={{ margin: '10px', color: 'white' }}>{str}</div>
             <div style={{ margin: '10px', color: 'white' }}>{mat}</div>
+            <div style={{ margin: '10px', color: 'white' }}>{sss}</div>
+            <div style={{ margin: '10px', color: 'white' }}>{text}</div>
             <div className={css.gr}>
                 {NumberOutput}
                 {SignOutput}
             </div>
 
 
-            {/* <div ><span className={css.btn} onClick={(e) => number(e.target.innerText)}>1</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>2</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>3</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>+</span></div>
-            <div><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>4</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>5</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>6</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>-</span></div>
-            <div><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>7</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>8</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>9</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>x</span></div>
-            <div><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>0</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>/</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>=</span></div> */}
-        </div>
+    //         {/* <div ><span className={css.btn} onClick={(e) => number(e.target.innerText)}>1</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>2</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>3</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>+</span></div>
+    //         <div><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>4</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>5</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>6</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>-</span></div>
+    //         <div><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>7</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>8</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>9</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>x</span></div>
+    //         <div><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>0</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>/</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>=</span></div> */}
+    //     </div>
     )
+
+
+
 }
 
 export default Base
