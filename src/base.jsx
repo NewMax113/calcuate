@@ -3,11 +3,10 @@ import css from './base.module.css'
 
 
 function Base() {
-    let [str, setStr] = useState('Пусто') //вывод
     let [mat, setMat] = useState('') //процесс
     let [test, setTest] = useState([])
     let [test2, setTest2] = useState([])
-    let [text, setText] = useState('')
+    let [text, setText] = useState('0')
 
     let num = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
     let sign = ['+', '-', 'x', '/', '=']
@@ -17,27 +16,26 @@ function Base() {
     let [sss, setSss] = useState('')
     let strr = ''
     let a = 0
+    let ziro = '0'
 
     function number(num) {
-
-
-
-        // if (test2.length >= test.length && test2.length > 0 ) {
-        //     let s = [...test2]
-        //     let m = s.splice(test.length - 1, test2.length - test.length + 1)
-        //     console.log('sh')
-        // }
         if (num !== '+' || num !== '-' || num !== 'x' || num !== '/') {
             if (num !== undefined && num !== '+' & num !== '-' & num !== '=' & num !== 'x' & num !== '/') {
-                console.log('отработало при вводе')
-                setSss(() => sss + num)
-                setText(text + num)
+                if (text == '0') {
+                    setText(num)
+                    setSss(() => num)
+                } else {
+                    console.log('отработало при вводе')
+                    setSss(() => sss + num)
+                    setText(text + num)
+                }
+
             }
         }
 
         if (num == '+' || num == '-' || num == 'x' || num == '/') {
             if (sss === '') {
-                if (test2.length > 0) {
+                if (test2.length > 0) { //заменяем знак на выбранный
                     test2[test2.length - 1] = num
                     setTest2(test2)
                     let ss = text.split('')
@@ -47,24 +45,29 @@ function Base() {
                     // setText(text)
                     //setText(text.split('')[text.length-1]=num)
                     // setText(text)
+                } else { //если после знака идет число
+                    setText(num)
+                    setSss(num)
                 }
             } else {
-                if (sss.length > 0) {
-                    setTest([...test, sss])
-                    setTest2([...test2, num])
-                    setText(text + num)
-                    setSss('')
-                    console.log('ddd')//проверить 
+                if (sss == '-' || sss == '+' ) { //если после знака идет число
+                        setText(sss)
+                } else {
+                    if (sss.length > 0) { //если в строке присутствуют числа и начинается не с - или +
+                        setTest([...test, sss])
+                        setTest2([...test2, num])
+                        setText(text + num)
+                        setSss('')
+                        console.log('ddd')//проверить 
+                    }
+                    else { //добавляем в массив чисел
+                        setTest([...test, sss])
+                        setText(text + num)
+                        setSss('')
+                    }
                 }
-                else {
-                    setTest([...test, sss])
-                    setText(text + num)
-                    setSss('')
-                }
-
             }
         }
-        console.log('723'.length)
         if (num == '=') {
             if (test.length <= test2.length) {
                 setTest([...test, sss])
@@ -78,19 +81,20 @@ function Base() {
     }
 
     useEffect(() => {
-        if (test.length > test2.length && test2.length > 0) {
-            let test2cop = [...test2]
-            let testcop = [...test]
-            let mas = []
-            let plus_and_minus = 0
+        if (test.length > test2.length) {
+            let test2cop = [...test2] //копия массива со знаками
+            let testcop = [...test] //копия массива с числами
+            let mas = [] //массив знаков только + и -
+            let plus_and_minus = 0 //счетчик + и -
             let n
-            for (let i = 0; i <= test2.length; i++) {
+            for (let i = 0; i <= test2.length; i++) { //провера на поряок выполнения. Первым * или /, затем все остальное
                 if (i < test2.length) {
-                    if (test2[i] === '+' || test2[i] === '-') {
+                    if (test2[i] === '+' || test2[i] === '-') { //если + или -, то ув счетчик и добавляем в массив 
                         plus_and_minus += 1
                         mas.push(test2[i])
                     } else {
-                        if (test2[i] === 'x') {
+                        if (test2[i] === 'x') { //если знак * или /, то считаем числа, между которыми нахоидся знак, 
+                                                //затем в копии массива заменяем числа и удаляем знак
                             n = testcop[plus_and_minus] * testcop[1 + plus_and_minus]
                             testcop.splice(plus_and_minus, 2, n)
                             test2cop.splice(plus_and_minus, 1)
@@ -101,8 +105,8 @@ function Base() {
                             testcop.splice(plus_and_minus, 2, n)
                         }
                     }
-                } else {
-                    if (mas.length > 0) {
+                } else { //как только счетчик будет >= длине массива...
+                    if (mas.length > 0) { //то проверяем массив на пустоту, если не пуст, то выполняем действия...
                         mas.map((x, i) => {
                             if (x === '+') {
                                 if (a == 0) {
@@ -122,7 +126,7 @@ function Base() {
                                 }
                             }
                         })
-                    } else {
+                    } else {//есил пуст, то просто умножаем или делим
                         test2.map((x, i) => {
                             if (x === 'x') {
                                 if (a == 0) {
@@ -143,65 +147,12 @@ function Base() {
                         }
                         )
                     }
-
                 }
-                // if (test2cop[i] === 'x' || test2cop[i] === '/') {
-                //     if (test2cop[i] === 'x') {
-                //         n = testcop[i] * testcop[i+1]
-                //         testcop.splice(i, 2, n)
-                //         test2cop.splice(i, 1)
-                //         console.log(testcop)
-                //         console.log(test2cop)
-                //     } else {
-                //         console.log(testcop)
-                //         n = testcop[i] / testcop[i+1]
-                //         test2cop.splice(i, 1)
-                //         testcop.splice(i, 2, n)
-                //     }
-
-                // } else {
-
-                // }
-
+                if (test2.length < 1) {
+                    a = Number(test[0])
+                }
             }
-            console.log(testcop)
-            // test2.map((x, i) => {
 
-
-            //     if (x === '+') {
-            //         if (a == 0) {
-            //             a = 0
-            //             a = Number(test[i]) + Number(test[i + 1])
-            //         }
-            //         else {
-            //             a = Number(a) + Number(test[i + 1])
-            //         }
-            //     }
-            //     if (x === '-') {
-            //         if (a == 0) {
-            //             a = Number(test[i]) - Number(test[i + 1])
-            //         }
-            //         else {
-            //             a = Number(a) - Number(test[i + 1])
-            //         }
-            //     }
-            //     if (x === 'x') {
-            //         if (a == 0) {
-            //             a = Number(test[i]) * Number(test[i + 1])
-            //         }
-            //         else {
-            //             a = Number(a) * Number(test[i + 1])
-            //         }
-            //     }
-            //     if (x === '/') {
-            //         if (a == 0) {
-            //             a = Number(test[i]) / Number(test[i + 1])
-            //         }
-            //         else {
-            //             a = Number(a) / Number(test[i + 1])
-            //         }
-            //     }
-            // })
             for (let z = 0; z < test.length; z++) {
                 if (z < test.length && test2[z] !== undefined) {
                     strr += String(test[z]) + String(test2[z])
@@ -217,8 +168,7 @@ function Base() {
                 }
 
             }
-            setStr(`Ответ: ${a}`)
-            setMat(`Решение: ${strr}`)
+            setMat(strr)
             console.log(a, 'Ответ')
             console.log(strr, 'Решение')
             console.log(sss, 'строка')
@@ -228,65 +178,26 @@ function Base() {
     }, [test])
 
     function clear() {
-        setStr('Пусто') //вывод
         setMat('') //процесс
         setTest([])
         setTest2([])
         setText('')
-
         setSss('')
         strr = ''
         a = 0
     }
 
-    function erase() {
-        if (sss.length > 0) {
-            console.log(num)
-            if (num == '+' || num == '-' || num == 'x' || num == '/' || num == '=') {
-                setSss('')
-            } else {
-                setSss('')
-            setText('')
-            }
-        }
-        else {
-            if (text.length > 0) {
-                setText('')
-            } else {
-                if (test.length > test2.length && test.length > 0) {
-                    let er = test.pop()
-                    setTest(er)
-                } else {
-                    let er = test2.pop()
-                    setTest2(er)
-                }
-            }
-
-        }
-
-
-    }
-
     return (
         <div className={css.form}>
-            <div style={{ margin: '10px', color: 'white' }}>{str}</div>
-            <div style={{ margin: '10px', color: 'white' }}>{mat}</div>
-            <div style={{ margin: '10px', color: 'white' }}>{sss}</div>
-            <div style={{ margin: '10px', color: 'white' }}>{text}</div>
+            {mat.length <= 0 ? <div className={css.str_resp}>Решение: <spam >...</spam></div> : <div className={css.str_resp}>Решение: <spam >{mat}</spam></div>}
+            {text.length > 0 ? <div className={css.str_resp_span}>{text}</div> : <div className={css.str_resp_span}>{ziro}</div>}
 
             <div className={css.gr}>
-                <div className={css.btn} onClick={() => clear()}>Удалить</div>
-                <div className={css.btn} onClick={() => erase()}>Стереть</div>
                 {NumberOutput}
                 {SignOutput}
+                <div onClick={() => clear()}><sapn className={`${css.btn} ${css.btn_text}`}>Стереть</sapn></div>
             </div>
-
-
-    //         {/* <div ><span className={css.btn} onClick={(e) => number(e.target.innerText)}>1</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>2</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>3</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>+</span></div>
-    //         <div><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>4</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>5</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>6</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>-</span></div>
-    //         <div><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>7</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>8</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>9</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>x</span></div>
-    //         <div><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>0</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>/</span><span style={{ margin: '10px' }} onClick={(e) => number(e.target.innerText)}>=</span></div> */}
-    //     </div>
+        </div>
     )
 
 
